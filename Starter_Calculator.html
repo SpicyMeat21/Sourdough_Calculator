@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sourdough Starter Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 420px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Sourdough Starter Calculator</h2>
+
+  <label>
+    Empty Jar Weight (g)
+    <input type="number" id="jarWeight" step="0.1">
+  </label>
+
+  <label>
+    Total Weight (Jar + Starter) (g)
+    <input type="number" id="totalWeight" step="0.1">
+  </label>
+
+  <label>
+    Ratio (starter:flour:water)
+    <input type="text" id="ratio" placeholder="e.g. 1:2:2">
+  </label>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <div class="result" id="output"></div>
+
+  <script>
+    function calculate() {
+      const jarWeight = parseFloat(document.getElementById('jarWeight').value);
+      const totalWeight = parseFloat(document.getElementById('totalWeight').value);
+      const ratioInput = document.getElementById('ratio').value;
+
+      if (isNaN(jarWeight) || isNaN(totalWeight) || !ratioInput) {
+        document.getElementById('output').textContent = "Please fill in all fields.";
+        return;
+      }
+
+      const parts = ratioInput.split(':').map(Number);
+
+      if (parts.length !== 3 || parts.some(isNaN)) {
+        document.getElementById('output').textContent =
+          "Ratio must be in starter:flour:water format (e.g. 1:2:2).";
+        return;
+      }
+
+      const [starterRatio, flourRatio, waterRatio] = parts;
+
+      const starterWeight = totalWeight - jarWeight;
+
+      if (starterWeight <= 0) {
+        document.getElementById('output').textContent =
+          "Total weight must be greater than jar weight.";
+        return;
+      }
+
+      const flourNeeded = starterWeight * (flourRatio / starterRatio);
+      const waterNeeded = starterWeight * (waterRatio / starterRatio);
+
+      document.getElementById('output').innerHTML = `
+        Starter: ${starterWeight.toFixed(1)} g<br>
+        Flour needed: ${flourNeeded.toFixed(1)} g<br>
+        Water needed: ${waterNeeded.toFixed(1)} g
+      `;
+    }
+  </script>
+
+</body>
+</html>
