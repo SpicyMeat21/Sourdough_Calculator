@@ -1,62 +1,110 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sourdough Starter Calculator</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 420px;
-      margin: 40px auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+    * {
       box-sizing: border-box;
     }
-    button {
-      margin-top: 20px;
-      padding: 10px;
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
       width: 100%;
-      font-size: 16px;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 1.8rem;
+    }
+
+    label {
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.2rem;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 18px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 12px;
+      border: none;
+      background: #3a7d44;
+      color: white;
       cursor: pointer;
     }
+
+    button:active {
+      background: #326c3a;
+    }
+
     .result {
-      margin-top: 20px;
-      font-weight: bold;
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      background: #ffffff;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: #b00020;
     }
   </style>
 </head>
 <body>
 
-  <h2>Sourdough Starter Calculator</h2>
+  <div class="container">
+    <h1>🍞 Sourdough Calculator</h1>
 
-  <label>
-    Empty Jar Weight (g)
-    <input type="number" id="jarWeight" step="0.1">
-  </label>
+    <label>
+      Empty Jar Weight (g)
+      <input type="number" id="jarWeight" inputmode="decimal">
+    </label>
 
-  <label>
-    Total Weight (Jar + Starter) (g)
-    <input type="number" id="totalWeight" step="0.1">
-  </label>
+    <label>
+      Total Weight (Jar + Starter) (g)
+      <input type="number" id="totalWeight" inputmode="decimal">
+    </label>
 
-  <label>
-    Ratio (starter:flour:water)
-    <input type="text" id="ratio" placeholder="e.g. 1:2:2">
-  </label>
+    <label>
+      Ratio (starter : flour : water)
+      <input type="text" id="ratio" placeholder="1:2:2">
+    </label>
 
-  <button onclick="calculate()">Calculate</button>
+    <button onclick="calculate()">Calculate</button>
 
-  <div class="result" id="output"></div>
+    <div class="result" id="output"></div>
+  </div>
 
   <script>
     function calculate() {
@@ -64,40 +112,43 @@
       const totalWeight = parseFloat(document.getElementById('totalWeight').value);
       const ratioInput = document.getElementById('ratio').value;
 
+      const output = document.getElementById('output');
+
       if (isNaN(jarWeight) || isNaN(totalWeight) || !ratioInput) {
-        document.getElementById('output').textContent = "Please fill in all fields.";
+        output.innerHTML = '<span class="error">Please fill in all fields.</span>';
         return;
       }
 
       const parts = ratioInput.split(':').map(Number);
 
       if (parts.length !== 3 || parts.some(isNaN)) {
-        document.getElementById('output').textContent =
-          "Ratio must be in starter:flour:water format (e.g. 1:2:2).";
+        output.innerHTML =
+          '<span class="error">Ratio must be in starter:flour:water format (e.g. 1:2:2).</span>';
         return;
       }
 
       const [starterRatio, flourRatio, waterRatio] = parts;
-
       const starterWeight = totalWeight - jarWeight;
 
       if (starterWeight <= 0) {
-        document.getElementById('output').textContent =
-          "Total weight must be greater than jar weight.";
+        output.innerHTML =
+          '<span class="error">Total weight must be greater than jar weight.</span>';
         return;
       }
 
       const flourNeeded = starterWeight * (flourRatio / starterRatio);
       const waterNeeded = starterWeight * (waterRatio / starterRatio);
 
-      document.getElementById('output').innerHTML = `
-        Starter: ${starterWeight.toFixed(1)} g<br>
-        Flour needed: ${flourNeeded.toFixed(1)} g<br>
-        Water needed: ${waterNeeded.toFixed(1)} g
+      output.innerHTML = `
+        <strong>Starter:</strong> ${starterWeight.toFixed(1)} g<br>
+        <strong>Flour needed:</strong> ${flourNeeded.toFixed(1)} g<br>
+        <strong>Water needed:</strong> ${waterNeeded.toFixed(1)} g
       `;
     }
   </script>
 
 </body>
 </html>
+
+
 
